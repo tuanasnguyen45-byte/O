@@ -1,0 +1,39 @@
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+local Mouse = LocalPlayer:GetMouse()
+
+local TARGET_PART = "Head"
+local FOV_RADIUS = 200
+
+local function GetClosestPlayer()
+    local ClosestTarget = nil
+    local MaxDistance = FOV_RADIUS
+
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild(TARGET_PART) then
+            local TargetCharacter = Player.Character
+            local TargetPart = TargetCharacter[TARGET_PART]
+            local ScreenPosition, OnScreen = Camera:WorldToViewportPoint(TargetPart.Position)
+            
+            if OnScreen then
+                local MouseDistance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(ScreenPosition.X, ScreenPosition.Y)).Magnitude
+                if MouseDistance < MaxDistance then
+                    MaxDistance = MouseDistance
+                    ClosestTarget = TargetPart
+                end
+            end
+        end
+    end
+    return ClosestTarget
+end
+
+RunService.RenderStepped:Connect(function()
+    local Target = GetClosestPlayer()
+    if Target then
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, Target.Position)
+    end
+end)
