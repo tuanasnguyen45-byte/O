@@ -1,0 +1,17 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local RunService = game:GetService("RunService")
+
+getgenv().AutoShoot = true
+
+RunService.RenderStepped:Connect(function()
+    if getgenv().AutoShoot then
+        if mouse1click then
+            mouse1click()
+        elseif click_mouse then
+            click_mouse()
+        end
+        task.wait(0.05)
+    end
+end)
