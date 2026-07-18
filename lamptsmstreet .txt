@@ -1,0 +1,24 @@
+void ProcessAimbot(Player localPlayer, std::vector<Player>& entityList) {
+    Player* bestTarget = nullptr;
+    float closestDistance = 999999.0f; 
+
+    for (Player& target : entityList) {
+        if (!target.is_alive || target.id == localPlayer.id) {
+            continue; 
+        }
+
+        if (target.team_id == localPlayer.team_id) {
+            continue; 
+        }
+
+        float currentDistance = GetDistance(localPlayer.position, target.position);
+        if (currentDistance < closestDistance) {
+            closestDistance = currentDistance;
+            bestTarget = &target;
+        }
+    }
+
+    if (bestTarget != nullptr) {
+        LockAimToTarget(bestTarget->position); 
+    }
+}
