@@ -1,0 +1,55 @@
+from inference_sdk import InferenceHTTPClient
+
+CLIENT = InferenceHTTPClient(
+    api_url="https://serverless.roboflow.com",
+    api_key="API_KEY"
+)
+
+result = CLIENT.infer("YOUR_IMAGE.jpg", model_id="roblox-aimbot/2")
+# 1. Import the library
+from inference_sdk import InferenceHTTPClient
+
+# 2. Connect to your workspace
+client = InferenceHTTPClient(
+  api_url="https://serverless.roboflow.com",
+  api_key="API_KEY"
+)
+
+# 3. Run your workflow on an image
+result = client.run_workflow(
+  workspace_name="<YOUR_WORKSPACE>",
+  workflow_id="<YOUR_WORKFLOW_ID>",
+  images={
+    "image": "YOUR_IMAGE.jpg"  # Path to your image file
+  },
+  parameters={
+    "classes": "head, enemy"
+  },
+  use_cache=True  # cache workflow definition for 15 minutes
+)
+
+# 4. Get your results
+print(result)
+local Teams = game:GetService("Teams")
+
+-- Thay "Police" bằng tên đội của bạn
+local targetTeam = Teams:FindFirstChild("Police")
+
+local function checkPlayerTeam(player)
+    if player.Team == targetTeam then
+        print(player.Name .. " thuộc đội cảnh sát!")
+        return true
+    else
+        print(player.Name .. " không thuộc đội cảnh sát.")
+        return false
+    end
+end
+local Players = game:GetService("Players")
+
+local function canAttack(attacker, victim)
+    -- Nếu hai người cùng đội thì không cho tấn công
+    if attacker.Team == victim.Team then
+        return false -- Không thể tấn công (Đồng đội)
+    end
+    return true -- Có thể tấn công (Khác đội)
+end
