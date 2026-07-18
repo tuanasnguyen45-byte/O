@@ -1,0 +1,9 @@
+local Players = game:GetService("Players")
+local targetName = "Ten_Nguoi_Choi_O_Day" -- Thay bằng tên người chơi cần kick
+
+local player = Players:FindFirstChild(targetName)
+if player then
+    player:Kick("Bạn đã bị kích khỏi server do vi phạm quy tắc.")
+else
+    print("Không tìm thấy người chơi này.")
+end
