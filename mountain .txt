@@ -1,0 +1,95 @@
+using UnityEngine;
+
+public class GameMechanicsController : MonoBehaviour
+{
+    [Header("Team Settings")]
+    public string myTeam = "Blue";
+    
+    [Header("Aim Assist Settings")]
+    public float aimRadius = 20f;
+    public float aimSpeed = 5f;
+    private Transform currentTarget;
+
+    [Header("Visual/ESP Settings")]
+    public Texture2D indicatorIcon;
+    private Camera mainCamera;
+
+    void Start()
+    {
+        mainCamera = Camera.main;
+    }
+
+    void Update()
+    {
+        FindClosestEnemy();
+        if (currentTarget != null)
+        {
+            ApplyAimAssist();
+        }
+    }
+
+    void OnGUI()
+    {
+        RenderTeamIndicators();
+    }
+
+    // 1. TEAM CHECK
+    void FindClosestEnemy()
+    {
+        Collider[] targets = Physics.OverlapSphere(transform.position, aimRadius);
+        float closestDistance = Mathf.Infinity;
+        Transform bestTarget = null;
+
+        foreach (var col in targets)
+        {
+            PlayerEntity player = col.GetComponent<PlayerEntity>();
+            if (player != null && player.teamName != myTeam)
+            {
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    bestTarget = col.transform;
+                }
+            }
+        }
+        currentTarget = bestTarget;
+    }
+
+    // 2. AIM ASSIST
+    void ApplyAimAssist()
+    {
+        Vector3 direction = currentTarget.position - transform.position;
+        direction.y = 0; 
+        
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * aimSpeed);
+    }
+
+    // 3. ESP / WORLD-TO-SCREEN
+    void RenderTeamIndicators()
+    {
+        if (mainCamera == null) return;
+
+        PlayerEntity[] allPlayers = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.None);
+        foreach (var player in allPlayers)
+        {
+            if (player.transform == this.transform) continue;
+
+            Vector3 screenPos = mainCamera.WorldToScreenPoint(player.transform.position);
+            if (screenPos.z > 0)
+            {
+                float x = screenPos.x;
+                float y = Screen.height - screenPos.y;
+
+                Rect rect = new Rect(x - 15, y - 15, 30, 30);
+                GUI.DrawTexture(rect, indicatorIcon);
+            }
+        }
+    }
+}
+
+public class PlayerEntity : MonoBehaviour
+{
+    public string teamName;
+}
