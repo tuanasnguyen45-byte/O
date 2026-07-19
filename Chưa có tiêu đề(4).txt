@@ -1,0 +1,11 @@
+import math
+
+def calculate_aim(player, target):
+    dx = target['x'] - player['x']
+    dy = target['y'] - player['y']
+    dz = target['z'] - player['z']
+    
+    yaw = math.atan2(dy, dx) * 180 / math.pi
+    pitch = math.atan2(dz, math.sqrt(dx**2 + dy**2)) * 180 / math.pi
+    
+    return {"yaw": yaw, "pitch": pitch}
